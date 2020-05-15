@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MINOR-2</title>
+
+    <!-- scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <h3>HOME PAGE</h3>
+
+    <button id="sCamera">Start Camera</button>
+    <br>
+    <video src="" id="videoStream"></video>
+    <br>
+    <button id="capture">Capture</button>
+    <br>
+    <canvas id="canvas" width=320 height=240></canvas>
+
+    <hr>
+
+    <script>
+
+        $(() => {
+
+
+            // document.getElementById('username').innerHTML = user.firstname + " " +
+            //     user.lastname;
+
+            const startCameraButton = $('#sCamera');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const captureButton = document.getElementById('capture');
+
+
+            startCameraButton.click(() => {
+                console.log("Inside startCameraButton.Click()");
+                // // make videoChat visible
+                // vChatWindow.show();
+
+                navigator.webkitGetUserMedia({
+                    video: true,
+                }, function (stream) {
+
+                    // attach your own stream
+                    const videoElement = document.getElementById('videoStream')
+                    console.log("videoElement", videoElement);
+                    videoElement.srcObject = stream;
+                    videoElement.play()
+
+
+                    setInterval(() => {
+                        captureNewImage();
+                    }, 3000);
+
+
+
+
+
+
+
+
+
+                    // Draw the video frame to the canvas.
+                    captureButton.addEventListener('click', () => {
+                        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+                        let dataURL = canvas.toDataURL();
+                        console.log("DataURL => ", dataURL);
+                        // dataToSend = {
+                        //     "img": dataURL
+                        // }
+
+
+
+                        // Text to Speech Output
+                        function textToSpeechOutput(caption) {
+                            var synth = window.speechSynthesis;
+                            var utter = new SpeechSynthesisUtterance();
+                            var textToBeSpoken = caption;
+
+                            textToSpeech(textToBeSpoken);
+                        }
+
+
+                        function textToSpeech(textToBeSpoken) {
+
+                            // get all voices that browser offers
+                            var available_voices = window.speechSynthesis.getVoices();
+
+                            // this will hold an english voice
+                            var english_voice = '';
+
+                            // find voice by language locale "en-US"
+                            // if not then select the first voice
+                            console.log("available_voices", available_voices)
+
+                            for (var i = 0; i < available_voices.length; i++) {
+                                if (available_voices[i].lang === 'en-US') {
+                                    english_voice = available_voices[i];
+                                    break;
+                                }
+                            }
+                            if (english_voice === '')
+                                english_voice = available_voices[0];
+
+                            // new SpeechSynthesisUtterance object
+                            var utter = new SpeechSynthesisUtterance();
+                            utter.rate = 0.9;
+                            utter.pitch = 0.3;
+                            utter.text = textToBeSpoken;
+                            utter.voice = english_voice;
+
+                            // event after text has been spoken
+                            utter.onend = function () {
+                                // alert('Speech has finished');
+                            }
+                            // speak
+                            window.speechSynthesis.speak(utter);
+                        }
+
+
+                        $.ajax({
+                            type: "POST",
+                            // contentType: "application/json",
+                            url: "/",
+                            data: { 'data': dataURL }
+                        }).done(function (data) {
+                            console.log("-----------------");
+                            console.log("Output yaha hai :")
+                            console.log(data);
+                            textToSpeechOutput(data.caption);
+
+                        });
+
+
+                    });
+
+
+                }, function (err) {
+                    console.log("Error ->", err)
+                    // console.log(err)
+                })
+            })
+
+
+        })
+    </script>
+
+</body>
+
+
+</html>
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Image Captioning</title>
+    <style>
+        .heading {
+            font-weight: 100;
+            font-size: 4em;
+            text-shadow: 1px 1px 5px black;
+        }
+
+        img {
+            height: 90%;
+            width: 100%;
+        }
+
+        .text {
+            font-size: 32px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <div class="container">
+                <h1 class="heading"> Image Captioning BOT </h1>
+                <p> Upload your image to generate a caption... </p>
+            </div>
+        </div>
+        <form class="form-inline" method="POST" action="/" enctype="multipart/form-data">
+            <label><b> Image : &nbsp;&nbsp; </b></label>
+            <input class="form-control" type="file" name="userimage" placeholder="Upload Image">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <br>
+        <br>
+        {% if result %}
+        <div class="row">
+            <div class="col-sm-4">
+                <img src="{{result['image']}}">
+            </div>
+            <div class="col-sm-8">
+                <p class="text"> Generated Caption : </p>
+                <p> <b>{{ result['caption'] }} </b> </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html> -->

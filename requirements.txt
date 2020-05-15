@@ -10,4 +10,3 @@ tensorboard-plugin-wit==1.6.0.post3
 tensorflow==2.2.0
 tensorflow-estimator==2.2.0
 gunicorn==20.0.4
-
