@@ -14,17 +14,40 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
+    <link href="https://fonts.googleapis.com/css?family=Satisfy&display=swap" rel="stylesheet">
+
+    <style>
+        .bgstle {
+            background-color: #343a40;
+            min-height: 100vh;
+        }
+
+        .heading {
+            color: white;
+            font-family: 'Satisfy', cursive;
+        }
+
+
+        .center {
+            margin-left: auto;
+            margin-right: auto;
+            display: block
+        }
+    </style>
+
+
 </head>
 
 <body>
-    <div class="container" id="mainContainer">
-        <h3 class="text-center"> Bootstrap heading</h3>
+    <div class="container bgstle" id="mainContainer">
+        <h1 class="text-center heading pt-3">Captioned Trail</h1>
 
-        <button class="text-center" id="sCamera">Start Camera</button>
+        <!-- <button class="text-center" id="sCamera">Start Camera</button> -->
         <br>
-        <video src="" id="videoStream"></video>
+        <video class="center" height=250 id="videoStream"></video>
         <br>
-        <canvas id="canvas" style="display: none;" width=320 height=240></canvas>
+        <canvas id="canvas" style="display: none;" width=150 height=150></canvas>
+        <div class="container" id="result"></div>
 
     </div>
 

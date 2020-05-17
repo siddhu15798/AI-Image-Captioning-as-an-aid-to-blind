@@ -6,6 +6,14 @@ $(() => {
     const context = canvas.getContext('2d');
     const captureButton = document.getElementById('capture');
     const mainContainer = $('#mainContainer');
+    let resultDiv = $('#result');
+
+
+
+    // $.get("http://192.168.1.4:8080/shot.jpg", function (data) {
+    //     console.log("Data Aya Kya :", data);
+
+    // });
 
 
     mainContainer.on("click", () => {
@@ -73,7 +81,6 @@ $(() => {
                 window.speechSynthesis.speak(utter);
             }
 
-
             function captureNewImage() {
                 context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
@@ -88,7 +95,9 @@ $(() => {
                 }).done(function (data) {
                     console.log("Generated Caption :", data.caption);
                     textToSpeechOutput(data.caption);
-
+                    resultDiv.append(`<div class="alert alert-info" role="alert">
+                                        ${data.caption}
+                                    </div>`);
                 });
 
             }
