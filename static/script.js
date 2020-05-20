@@ -8,23 +8,11 @@ $(() => {
     const mainContainer = $('#mainContainer');
     let resultDiv = $('#result');
 
+    let moduleStarted = false;
 
+    function runModule() {
 
-    // $.get("http://192.168.1.4:8080/shot.jpg", function (data) {
-    //     console.log("Data Aya Kya :", data);
-
-    // });
-
-
-    mainContainer.on("click", () => {
-        // console.log("Inside startCameraButton.Click()");
-        // // make videoChat visible
-        // vChatWindow.show();
-        mainContainer.off("click", () => {
-            alert("Hat gya Kya ?")
-        })
-
-
+        moduleStarted = true;
         navigator.webkitGetUserMedia({
             video: true,
         }, function (stream) {
@@ -115,6 +103,68 @@ $(() => {
             // console.log(err)   
             // console.log(err)
         })
+    }
+
+
+
+    // Speech Recognition Code
+    // Speech Recognition for weather
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const recognition = new SpeechRecognition();
+    recognition.interimResults = true;
+
+
+    recognition.addEventListener('result', (e) => {
+        // console.log(e.results)
+
+        // console.log(transcript);
+        const transcript = Array.from(e.results)
+            .map(result => result[0])
+            .map(result => result.transcript)
+            .join('')
+
+        // console.log(transcript)
+
+        if (e.results[0].isFinal) {
+
+            // console.log("Fianl vala -", e.results[0][0].transcript)
+            finalTranscript = e.results[0][0].transcript;
+
+            // Scanning for content
+            if (finalTranscript.includes('start')) {
+                console.log("VOICE INPUT RECOGNIZED");
+
+                if (moduleStarted == false) {
+                    runModule();
+                }
+            }
+
+        }
+
+    })
+
+
+    recognition.addEventListener('end', recognition.start);
+
+    recognition.start();
+
+
+
+
+
+
+    mainContainer.on("click", () => {
+        // console.log("Inside startCameraButton.Click()");
+        // // make videoChat visible
+        // vChatWindow.show();
+        mainContainer.off("click", () => {
+            alert("Hat gya Kya ?")
+        })
+        if (moduleStarted == false) {
+            runModule();
+        }
+
     })
 
 })
